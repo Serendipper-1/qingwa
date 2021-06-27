@@ -34,44 +34,8 @@ let cookiesArr = [], cookie = '', message;
 let cashinviteCode = 'YBo_aeyxYvsv-WvRw3sX1bE';
 let cashinviteCode2 = 'eU9Yab7hNPx3pziDwnUQ3g';
 let cashinviteCode3 = 'e1J-MLP0M7Zysw';
-let cashinviteCode4 = '';
-let cashinviteCode5 = '';
-let cashinviteCode6 = '';
-let cashinviteCode7 = '';
-let cashinviteCode8 = '';
-let cashinviteCode9 = '';
-let cashinviteCode10 = '';
-if (process.env.cashinviteCode) {
-  cashinviteCode = process.env.cashinviteCode;
-}
-if (process.env.cashinviteCode2) {
-  cashinviteCode2 = process.env.cashinviteCode2;
-}
-if (process.env.cashinviteCode3) {
-  cashinviteCode3 = process.env.cashinviteCode3;
-}
-if (process.env.cashinviteCode4) {
-  cashinviteCode4 = process.env.cashinviteCode4;
-}
-if (process.env.cashinviteCode5) {
-  cashinviteCode5 = process.env.cashinviteCode5;
-}
-if (process.env.cashinviteCode6) {
-  cashinviteCode6 = process.env.cashinviteCode6;
-}
-if (process.env.cashinviteCode7) {
-  cashinviteCode7 = process.env.cashinviteCode7;
-}
-if (process.env.cashinviteCode8) {
-  cashinviteCode8 = process.env.cashinviteCode8;
-}
-if (process.env.cashinviteCode9) {
-  cashinviteCode9 = process.env.cashinviteCode9;
-}
-if (process.env.cashinviteCode10) {
-  cashinviteCode10 = process.env.cashinviteCode10;
-}
-newShareCodes = [{ "inviteCode": `${cashinviteCode}` }, { "inviteCode": `${cashinviteCode2}` }, { "inviteCode": `${cashinviteCode3}` }, { "inviteCode": `${cashinviteCode4}` }, { "inviteCode": `${cashinviteCode5}` }, { "inviteCode": `${cashinviteCode6}` }, { "inviteCode": `${cashinviteCode7}` }, { "inviteCode": `${cashinviteCode8}` }, { "inviteCode": `${cashinviteCode9}` }, { "inviteCode": `${cashinviteCode10}` }] //这里修改你的邀请码
+
+newShareCodes = [{ "inviteCode": `${cashinviteCode}` }, { "inviteCode": `${cashinviteCode2}` }, { "inviteCode": `${cashinviteCode3}` }] //这里修改你的邀请码
 if ($.isNode()) {
   Object.keys(jdCookieNode).forEach((item) => {
     cookiesArr.push(jdCookieNode[item])
