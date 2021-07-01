@@ -16,8 +16,8 @@ const JD_API_HOST = 'https://m.jingxi.com';
 
 let cookie = '', message = '', allMessage = '', hasSend = false, shareCodes = [];
 const inviteCodes = [
-  '',
-  ''
+  '8Y-gNdxAw6f_cIYR14DRWl_mzVRzaJX8JLl2aI_DW2A=@pi4nuiVYMCSnZYIkVDhdQQ==',
+  '8Y-gNdxAw6f_cIYR14DRWl_mzVRzaJX8JLl2aI_DW2A=@pi4nuiVYMCSnZYIkVDhdQQ=='
 ];
 const jdCookieNode = require('./jdCookie.js');
 $.tuanIds = [];
