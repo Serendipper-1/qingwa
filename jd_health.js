@@ -27,13 +27,12 @@ const inviteCodes = [
   `T0225KkcRUxKp1SGdkyinfEJfACjVfnoaW5kRrbA@T023_fx7RR4a8VPeKB_wnP8Od3UCjVfnoaW5kRrbA`,
   `T0225KkcRUxKp1SGdkyinfEJfACjVfnoaW5kRrbA@T023_fx7RR4a8VPeKB_wnP8Od3UCjVfnoaW5kRrbA`
 ]
-let reward = process.env.JD_HEALTH_REWARD_NAME ? process.env.JD_HEALTH_REWARD_NAME : ''
+let reward = process.env.JD_HEALTH_REWARD_NAME ? process.env.JD_HEALTH_REWARD_NAME : '20'
 const randomCount = $.isNode() ? 20 : 5;
 if ($.isNode()) {
   Object.keys(jdCookieNode).forEach((item) => {
     cookiesArr.push(jdCookieNode[item]);
   });
-  console.log(`如果出现提示 ?.data. 错误，请升级nodejs版本(进入容器后，apk add nodejs-current)`)
   if (process.env.JD_DEBUG && process.env.JD_DEBUG === "false") console.log = () => { };
 } else {
   cookiesArr = [$.getdata("CookieJD"), $.getdata("CookieJD2"), ...$.toObj($.getdata("CookiesJD") || "[]").map((item) => item.cookie)].filter((item) => !!item);
