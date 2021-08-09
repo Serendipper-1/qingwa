@@ -1,6 +1,6 @@
 /*
-种豆得豆 脚本更新地址：https://gitee.com/lxk0301/jd_scripts/raw/master/jd_plantBean.js
-更新时间：2021-04-9
+种豆得豆 脚本更新地址：https://raw.githubusercontent.com/EchoChan314/xxx/main/jd_plantBean.js
+更新时间：2021-08-09
 活动入口：京东APP我的-更多工具-种豆得豆
 已支持IOS京东多账号,云端多京东账号
 脚本兼容: QuantumultX, Surge, Loon, JSBox, Node.js
@@ -9,17 +9,17 @@
 每个京东账号每天只能帮助3个人。多出的助力码将会助力失败。
 =====================================Quantumult X=================================
 [task_local]
-1 7-21/2 * * * https://gitee.com/lxk0301/jd_scripts/raw/master/jd_plantBean.js, tag=种豆得豆, img-url=https://raw.githubusercontent.com/58xinian/icon/master/jdzd.png, enabled=true
+1 7-21/2 * * * https://raw.githubusercontent.com/EchoChan314/xxx/main/jd_plantBean.js, tag=种豆得豆, img-url=https://raw.githubusercontent.com/58xinian/icon/master/jdzd.png, enabled=true
 
 =====================================Loon================================
 [Script]
-cron "1 7-21/2 * * *" script-path=https://gitee.com/lxk0301/jd_scripts/raw/master/jd_plantBean.js,tag=京东种豆得豆
+cron "1 7-21/2 * * *" script-path=https://raw.githubusercontent.com/EchoChan314/xxx/main/jd_plantBean.js,tag=京东种豆得豆
 
 ======================================Surge==========================
-京东种豆得豆 = type=cron,cronexp="1 7-21/2 * * *",wake-system=1,timeout=3600,script-path=https://gitee.com/lxk0301/jd_scripts/raw/master/jd_plantBean.js
+京东种豆得豆 = type=cron,cronexp="1 7-21/2 * * *",wake-system=1,timeout=3600,script-path=https://raw.githubusercontent.com/EchoChan314/xxx/main/jd_plantBean.js
 
 ====================================小火箭=============================
-京东种豆得豆 = type=cron,script-path=https://gitee.com/lxk0301/jd_scripts/raw/master/jd_plantBean.js, cronexpr="1 7-21/2 * * *", timeout=3600, enable=true
+京东种豆得豆 = type=cron,script-path=https://raw.githubusercontent.com/EchoChan314/xxx/main/jd_plantBean.js, cronexpr="1 7-21/2 * * *", timeout=3600, enable=true
 
 搬的https://github.com/uniqueque/QuantumultX/blob/4c1572d93d4d4f883f483f907120a75d925a693e/Script/jd_plantBean.js
 */
@@ -85,14 +85,15 @@ async function jdPlantBean() {
     console.log(`获取任务及基本信息`)
     await plantBeanIndex();
     // console.log(plantBeanIndexResult.data.taskList);
+    let count = $.plantBeanIndexResult.data.roundList.length
     if ($.plantBeanIndexResult && $.plantBeanIndexResult.code === '0' && $.plantBeanIndexResult.data) {
       const shareUrl = $.plantBeanIndexResult.data.jwordShareInfo.shareUrl
       $.myPlantUuid = getParam(shareUrl, 'plantUuid')
       console.log(`\n【京东账号${$.index}（${$.UserName}）的${$.name}好友互助码】${$.myPlantUuid}\n`);
       roundList = $.plantBeanIndexResult.data.roundList;
-      currentRoundId = roundList[1].roundId;//本期的roundId
-      lastRoundId = roundList[0].roundId;//上期的roundId
-      awardState = roundList[0].awardState;
+      currentRoundId = roundList[count - 1].roundId;//本期的roundId
+      lastRoundId = roundList[count - 2].roundId;//上期的roundId
+      awardState = roundList[count - 2].awardState;
       $.taskList = $.plantBeanIndexResult.data.taskList;
       subTitle = `【京东昵称】${$.plantBeanIndexResult.data.plantUserInfo.plantNickName}`;
       message += `【上期时间】${roundList[0].dateDesc.replace('上期 ', '')}\n`;
@@ -149,7 +150,7 @@ async function doGetReward() {
 async function doCultureBean() {
   await plantBeanIndex();
   if ($.plantBeanIndexResult && $.plantBeanIndexResult.code === '0') {
-    const plantBeanRound = $.plantBeanIndexResult.data.roundList[1]
+    const plantBeanRound = $.plantBeanIndexResult.data.roundList[2]
     if (plantBeanRound.roundState === '2') {
       //收取营养液
       if (plantBeanRound.bubbleInfos && plantBeanRound.bubbleInfos.length) console.log(`开始收取营养液`)
