@@ -1294,7 +1294,7 @@ function readShareCode() {
   console.log(`开始`)
   return new Promise(async resolve => {
     //$.get({url: `http://share.turinglabs.net/api/v3/jxfactory/query/${randomCount}/`, 'timeout': 10000}, (err, resp, data) => {
-    $.get({ url: `https://cdn.jsdelivr.net/gh/EchoChan314/xxx@main/DreamFactoryCode.json`, 'timeout': 10000 }, (err, resp, data) => {
+    $.get({ url: `https://raw.fastgit.org/EchoChan314/xxx/main/DreamFactoryCode.json`, 'timeout': 10000 }, (err, resp, data) => {
       console.log(data);
       try {
         if (err) {
