@@ -33,6 +33,12 @@ inputs:
           cronExpression: "1 0 0 * * * *"
           enable: true
           argument: jd_try
+    - timer: #东东超市兑换
+        parameters:
+          name: blueCoinFixed
+          cronExpression: "53 59 23 * * *"
+          enable: true
+          argument: jd_blueCoinFixed
     - timer: #京东极速版签到
         parameters:
           name: speedsign
