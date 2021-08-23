@@ -33,6 +33,12 @@ inputs:
           cronExpression: "1 0 0 * * * *"
           enable: true
           argument: jd_try
+    - timer: #京喜签到
+        parameters:
+          name: sign
+          cronExpression: "1 0,5 0 * * * *"
+          enable: true
+          argument: jx_sign
     - timer: #东东超市兑换
         parameters:
           name: blueCoinFixed
@@ -42,7 +48,7 @@ inputs:
     - timer: #京东极速版签到
         parameters:
           name: speedsign
-          cronExpression: "0 1 0-18/6 * * * *"
+          cronExpression: "0 1 4,10 * * * *"
           enable: true
           argument: jd_speed_sign
     - timer:  #京喜工厂 #财富岛热气球
