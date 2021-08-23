@@ -57,6 +57,12 @@ inputs:
           cronExpression: "2 45 0,6-23/1 * * * *"
           enable: true
           argument: jd_dreamFactory&jd_cfd_loop
+    - timer:  #财富岛助力
+        parameters:
+          name: gua_wealth_island_help
+          cronExpression: "3 0,1,9,14,18 * * *"
+          enable: true
+          argument: gua_wealth_island_help
     - timer:  #京喜牧场
         parameters:
           name: jxmc
