@@ -53,10 +53,10 @@ inputs:
           argument: jd_speed_sign
     - timer:  #京喜工厂 #财富岛热气球
         parameters:
-          name: dreamFactory_cfdloop
+          name: dreamFactory
           cronExpression: "2 45 0,6-23/1 * * * *"
           enable: true
-          argument: jd_dreamFactory&jd_cfd_loop
+          argument: jd_dreamFactory
     - timer:  #财富岛助力
         parameters:
           name: gua_wealth_island_help
@@ -71,10 +71,10 @@ inputs:
           argument: jd_jxmc
     - timer:  #美丽研究院
         parameters:
-          name: beauty
+          name: beauty_jd_cfd_loop
           cronExpression: "0 1 7,12,19 * * * *"
           enable: true
-          argument: jd_beauty
+          argument: jd_beauty&jd_cfd_loop
   environment: #  环境变量
     variables: #  环境变量对象
       AAA: BBB # 不要删除，用来格式化对齐追加的变量的
