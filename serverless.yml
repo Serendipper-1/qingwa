@@ -30,7 +30,7 @@ inputs:
     - timer: #京东试用
         parameters:
           name: try
-          cronExpression: "1 0 0 * * * *"
+          cronExpression: "1 16 0 * * * *"
           enable: true
           argument: jd_try
     - timer: #京喜签到
