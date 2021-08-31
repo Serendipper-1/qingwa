@@ -30,15 +30,9 @@ inputs:
     - timer: #京东试用
         parameters:
           name: try
-          cronExpression: "1 16 0 * * * *"
+          cronExpression: "1 16 0,6 * * * *"
           enable: true
           argument: jd_try
-    - timer: #京喜签到
-        parameters:
-          name: sign
-          cronExpression: "1 0,5 0 * * * *"
-          enable: true
-          argument: jx_sign
     - timer: #东东超市兑换
         parameters:
           name: blueCoinFixed
