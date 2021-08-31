@@ -39,6 +39,12 @@ inputs:
           cronExpression: "53 59 23 * * * *"
           enable: true
           argument: jd_blueCoinFixed
+    - timer: #京东汽车兑换
+        parameters:
+          name: jd_car_exchange
+          cronExpression: "0 0 0 * * * *"
+          enable: true
+          argument: jd_car_exchange
     - timer: #京东极速版签到
         parameters:
           name: speedsign
