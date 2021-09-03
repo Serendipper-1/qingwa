@@ -128,7 +128,11 @@ async function jdPet() {
         console.log(`🐶东东萌宠-互助码已提交！🐶`);
       }
       await $.get({
-        url: `https://api.sharecode.ga/api/runTimes?activityId=pet&sharecode=${$.petInfo.shareCode}`
+        url: `https://cdn.nz.lu/api/runTimes?activityId=pet&sharecode=${$.petInfo.shareCode}`,
+        headers: {
+          'Host': 'api.sharecode.ga'
+        },
+        timeout: 10000
       }, (err, resp, data) => {
         if (err) {
           console.log('上报失败', err)

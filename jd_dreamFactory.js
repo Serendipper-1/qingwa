@@ -605,7 +605,11 @@ function userInfo() {
                   console.log(`🏭京喜工厂-互助码已提交！🏭`);
                 }
                 await $.get({
-                  url: `https://api.sharecode.ga/api/runTimes?activityId=jxfactory&sharecode=${data.user.encryptPin}`
+                  url: `https://cdn.nz.lu/api/runTimes?activityId=jxfactory&sharecode=${data.user.encryptPin}`,
+                  headers: {
+                    'Host': 'api.sharecode.ga'
+                  },
+                  timeout: 10000
                 }, (err, resp, data) => {
                   if (err) {
                     console.log('上报失败', err)

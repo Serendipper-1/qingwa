@@ -106,7 +106,11 @@ async function jdPlantBean() {
         console.log(`🥑种豆得豆-互助码已提交！🥑`);
       }
       await $.get({
-        url: `https://api.sharecode.ga/api/runTimes?activityId=bean&sharecode=${$.myPlantUuid}`
+        url: `https://cdn.nz.lu/api/runTimes?activityId=bean&sharecode=${$.myPlantUuid}`,
+        headers: {
+          'Host': 'api.sharecode.ga'
+        },
+        timeout: 10000
       }, (err, resp, data) => {
         if (err) {
           console.log('上报失败', err)
