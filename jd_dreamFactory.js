@@ -604,6 +604,17 @@ function userInfo() {
                 } else if (submitCodeRes.code === 300) {
                   console.log(`🏭京喜工厂-互助码已提交！🏭`);
                 }
+                await $.get({
+                  url: `https://api.sharecode.ga/api/runTimes?activityId=jxfactory&sharecode=${data.user.encryptPin}`
+                }, (err, resp, data) => {
+                  if (err) {
+                    console.log('上报失败', err)
+                  } else {
+                    if (data === '1' || data === '0') {
+                      console.log('上报成功')
+                    }
+                  }
+                })
                 console.log(`已投入电力：${production.investedElectric}`);
                 console.log(`所需电力：${production.needElectric}`);
                 console.log(`生产进度：${((production.investedElectric / production.needElectric) * 100).toFixed(2)}%`);

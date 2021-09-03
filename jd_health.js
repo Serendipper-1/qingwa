@@ -143,6 +143,19 @@ function getTaskDetail(taskId = '') {
                 } else if (submitCodeRes.code === 300) {
                   console.log(`🏥东东健康-互助码已提交！🏥`);
                 }
+                if (data?.data?.result?.taskVos[0].assistTaskDetailVo.taskToken) {
+                  await $.get({
+                    url: `https://api.sharecode.ga/api/runTimes?activityId=health&sharecode=${data?.data?.result?.taskVos[0].assistTaskDetailVo.taskToken}`
+                  }, (err, resp, data) => {
+                    if (err) {
+                      console.log('上报失败', err)
+                    } else {
+                      if (data === '1' || data === '0') {
+                        console.log('上报成功')
+                      }
+                    }
+                  })
+                }
               }
             } else if (taskId === 22) {
               console.log(`${data?.data?.result?.taskVos[0]?.taskName}任务，完成次数：${data?.data?.result?.taskVos[0]?.times}/${data?.data?.result?.taskVos[0]?.maxTimes}`)

@@ -96,6 +96,17 @@ async function jdFruit() {
       } else if (submitCodeRes.code === 300) {
         console.log(`🐔东东农场-互助码已提交！🐔`);
       }
+      await $.get({
+        url: `https://api.sharecode.ga/api/runTimes?activityId=farm&sharecode=${$.farmInfo.farmUserPro.shareCode}`
+      }, (err, resp, data) => {
+        if (err) {
+          console.log('上报失败', err)
+        } else {
+          if (data === '1' || data === '0') {
+            console.log('上报成功')
+          }
+        }
+      })
       console.log(`\n【已成功兑换水果】${$.farmInfo.farmUserPro.winTimes}次\n`);
       message += `【已兑换水果】${$.farmInfo.farmUserPro.winTimes}次\n`;
       await masterHelpShare();//助力好友

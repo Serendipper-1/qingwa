@@ -127,6 +127,17 @@ async function jdPet() {
       } else if (submitCodeRes.code === 300) {
         console.log(`🐶东东萌宠-互助码已提交！🐶`);
       }
+      await $.get({
+        url: `https://api.sharecode.ga/api/runTimes?activityId=pet&sharecode=${$.petInfo.shareCode}`
+      }, (err, resp, data) => {
+        if (err) {
+          console.log('上报失败', err)
+        } else {
+          if (data === '1' || data === '0') {
+            console.log('上报成功')
+          }
+        }
+      })
       await taskInit();
       if ($.taskInit.resultCode === '9999' || !$.taskInit.result) {
         console.log('初始化任务异常, 请稍后再试');
