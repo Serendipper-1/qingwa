@@ -121,6 +121,12 @@ async function jdPet() {
         return
       }
       console.log(`\n【京东账号${$.index}（${$.UserName}）的${$.name}好友互助码】${$.petInfo.shareCode}\n`);
+      try { submitCodeRes = await submitCode(); } catch (e) { }
+      if (submitCodeRes && submitCodeRes.code === 200) {
+        console.log(`🐶东东萌宠-互助码提交成功！🐶`);
+      } else if (submitCodeRes.code === 300) {
+        console.log(`🐶东东萌宠-互助码已提交！🐶`);
+      }
       await taskInit();
       if ($.taskInit.resultCode === '9999' || !$.taskInit.result) {
         console.log('初始化任务异常, 请稍后再试');
@@ -450,6 +456,30 @@ async function showMsg() {
     $.log(`\n${message}\n`);
   }
 }
+//提交互助码
+function submitCode() {
+  return new Promise(async resolve => {
+    $.get({ url: `http://www.helpu.cf/jdcodes/submit.php?code=${$.petInfo.shareCode}&type=pet`, timeout: 10000 }, (err, resp, data) => {
+      try {
+        if (err) {
+          console.log(`${JSON.stringify(err)}`)
+          console.log(`${$.name} submitCode API请求失败，请检查网路重试`)
+        } else {
+          if (data) {
+            //console.log(`随机取个${randomCount}码放到您固定的互助码后面(不影响已有固定互助)`)
+            data = JSON.parse(data);
+          }
+        }
+      } catch (e) {
+        $.logErr(e, resp)
+      } finally {
+        resolve(data || { "code": 500 })
+      }
+    })
+    await $.wait(10000);
+    resolve({ "code": 500 })
+  })
+}
 function shareCodesFormat() {
   return new Promise(async resolve => {
     // console.log(`第${$.index}个京东账号的助力码:::${$.shareCodesArr[$.index - 1]}`)
@@ -520,7 +550,7 @@ function TotalBean() {
       try {
         if (err) {
           console.log(`${JSON.stringify(err)}`)
-          console.log(`${$.name} API请求失败，请检查网路重试`)
+          console.log(`${$.name} TotalBean API请求失败，请检查网路重试`)
         } else {
           if (data) {
             data = JSON.parse(data);

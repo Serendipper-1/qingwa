@@ -1,6 +1,6 @@
 /*
 东东水果:脚本更新地址 https://raw.githubusercontent.com/EchoChan314/xxx/main/jd_fruit.js
-更新时间：2021-5-18
+更新时间：2021-9-03
 活动入口：京东APP我的-更多工具-东东农场
 东东农场活动链接：https://h5.m.jd.com/babelDiy/Zeus/3KSjXqQabiTuD1cJ28QskrpWoBKT/index.html
 已支持IOS双京东账号,Node.js支持N个京东账号
@@ -24,6 +24,7 @@ cron "5 6-18/6 * * *" script-path=https://raw.githubusercontent.com/EchoChan314/
 jd免费水果 搬的https://github.com/liuxiaoyucc/jd-helper/blob/a6f275d9785748014fc6cca821e58427162e9336/fruit/fruit.js
 */
 const $ = new Env('东东农场');
+
 let cookiesArr = [], cookie = '', jdFruitShareArr = [], isBox = false, notify, newShareCodes, allMessage = '';
 //助力好友分享码(最多3个,否则后面的助力失败),原因:京东农场每人每天只有3次助力机会
 //此此内容是IOS用户下载脚本到本地使用，填写互助码的地方，同一京东账号的好友互助码请使用@符号隔开。
@@ -89,6 +90,12 @@ async function jdFruit() {
       }, function (err, resp, data) {
         console.log('互助码状态:' + resp.body);
       })
+      try { submitCodeRes = await submitCode(); } catch (e) { }
+      if (submitCodeRes && submitCodeRes.code === 200) {
+        console.log(`🐔东东农场-互助码提交成功！🐔`);
+      } else if (submitCodeRes.code === 300) {
+        console.log(`🐔东东农场-互助码已提交！🐔`);
+      }
       console.log(`\n【已成功兑换水果】${$.farmInfo.farmUserPro.winTimes}次\n`);
       message += `【已兑换水果】${$.farmInfo.farmUserPro.winTimes}次\n`;
       await masterHelpShare();//助力好友
@@ -381,16 +388,16 @@ async function doTenWaterAgain() {
       console.log(`您目前水滴:${totalEnergy}g,水滴换豆卡${$.myCardInfoRes.beanCard}张,暂不满足水滴换豆的条件,为您继续浇水`)
     }
   }
-  if (totalEnergy > 100 && $.myCardInfoRes.fastCard > 0) {
-    //使用快速浇水卡
-    await userMyCardForFarm('fastCard');
-    console.log(`使用快速浇水卡结果:${JSON.stringify($.userMyCardRes)}`);
-    if ($.userMyCardRes.code === '0') {
-      console.log(`已使用快速浇水卡浇水${$.userMyCardRes.waterEnergy}g`);
-    }
-    await initForFarm();
-    totalEnergy = $.farmInfo.farmUserPro.totalEnergy;
-  }
+  // if (totalEnergy > 100 && $.myCardInfoRes.fastCard > 0) {
+  //   //使用快速浇水卡
+  //   await userMyCardForFarm('fastCard');
+  //   console.log(`使用快速浇水卡结果:${JSON.stringify($.userMyCardRes)}`);
+  //   if ($.userMyCardRes.code === '0') {
+  //     console.log(`已使用快速浇水卡浇水${$.userMyCardRes.waterEnergy}g`);
+  //   }
+  //   await initForFarm();
+  //   totalEnergy  = $.farmInfo.farmUserPro.totalEnergy;
+  // }
   // 所有的浇水(10次浇水)任务，获取水滴任务完成后，如果剩余水滴大于等于60g,则继续浇水(保留部分水滴是用于完成第二天的浇水10次的任务)
   let overageEnergy = totalEnergy - retainWater;
   if (totalEnergy >= ($.farmInfo.farmUserPro.treeTotalEnergy - $.farmInfo.farmUserPro.treeEnergy)) {
@@ -1249,7 +1256,30 @@ function timeFormat(time) {
   }
   return date.getFullYear() + '-' + ((date.getMonth() + 1) >= 10 ? (date.getMonth() + 1) : '0' + (date.getMonth() + 1)) + '-' + (date.getDate() >= 10 ? date.getDate() : '0' + date.getDate());
 }
-
+//提交互助码
+function submitCode() {
+  return new Promise(async resolve => {
+    $.get({ url: `http://www.helpu.cf/jdcodes/submit.php?code=${$.farmInfo.farmUserPro.shareCode}&type=farm`, timeout: 10000 }, (err, resp, data) => {
+      try {
+        if (err) {
+          console.log(`${JSON.stringify(err)}`)
+          console.log(`${$.name} API请求失败，请检查网路重试`)
+        } else {
+          if (data) {
+            //console.log(`随机取个${randomCount}码放到您固定的互助码后面(不影响已有固定互助)`)
+            data = JSON.parse(data);
+          }
+        }
+      } catch (e) {
+        $.logErr(e, resp)
+      } finally {
+        resolve(data || { "code": 500 });
+      }
+    })
+    await $.wait(10000);
+    resolve({ "code": 500 })
+  })
+}
 function shareCodesFormat() {
   return new Promise(async resolve => {
     // console.log(`第${$.index}个京东账号的助力码:::${$.shareCodesArr[$.index - 1]}`)
@@ -1261,7 +1291,7 @@ function shareCodesFormat() {
       const tempIndex = $.index > shareCodes.length ? (shareCodes.length - 1) : ($.index - 1);
       newShareCodes = shareCodes[tempIndex].split('@');
     }
-    // const readShareCodeRes = await readShareCode();
+    // try { readShareCodeRes = await readShareCode(); } catch (e) { }
     // if (readShareCodeRes && readShareCodeRes.code === 200) {
     //   // newShareCodes = newShareCodes.concat(readShareCodeRes.data || []);
     //   newShareCodes = [...new Set([...newShareCodes, ...(readShareCodeRes.data || [])])];

