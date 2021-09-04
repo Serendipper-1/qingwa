@@ -29,7 +29,6 @@ const notify = $.isNode() ? require('./sendNotify') : '';
 //Node.js用户请在jdCookie.js处填写京东ck;
 const jdCookieNode = $.isNode() ? require('./jdCookie.js') : '';
 
-
 let cookiesArr = [], cookie = '', message;
 if ($.isNode()) {
   Object.keys(jdCookieNode).forEach((item) => {
@@ -89,15 +88,16 @@ async function jdGlobal() {
 
     await signInit()
     await sign()
-    await invite()
-    await invite2()
+    if (new Date().getDate() >= 6) {
+      await cashout()
+    }
     $.score = 0
     $.total = 0
     await taskList()
     await queryJoy()
     await signInit()
     await cash()
-    await showMsg()
+    // await showMsg()
   } catch (e) {
     $.logErr(e)
   }
@@ -117,24 +117,32 @@ async function signInit() {
     $.get(taskUrl('speedSignInit', {
       "activityId": "8a8fabf3cccb417f8e691b6774938bc2",
       "kernelPlatform": "RN",
-      "inviterId": "U44jAghdpW58FKgfqPdotA=="
-    }), async (err, resp, data) => {
-      try {
-        if (err) {
-          console.log(`${JSON.stringify(err)}`)
-          console.log(`${$.name} API请求失败，请检查网路重试`)
-        } else {
-          if (safeGet(data)) {
-            data = JSON.parse(data);
-            //console.log(data)
+    }),
+      async (err, resp, data) => {
+        try {
+          if (err) {
+            console.log(`${JSON.stringify(err)}`)
+            console.log(`${$.name} API请求失败，请检查网路重试`)
+          } else {
+            if (safeGet(data)) {
+              data = JSON.parse(data);
+              if (data.data && data.data.cashDrawAmount >= 8) {
+                console.log(`京东账号${$.index} ${$.nickName || $.UserName}已满足兑换条件\n`)
+                if (process.env.JS_EXCHANGE && process.env.JS_EXCHANGE === 'true') {
+                  console.log(`【注意】您已设置自动兑换红包，请尽快使用\n`)
+                  await cashout()
+                } else {
+                  console.log(`【注意】京东极速版签到领红包活动将于9月7日下线\n活动下线后余额会清零，请尽快兑换使用\n如需自动兑换，请添加变量名称：JS_EXCHANGE，变量值填true`)
+                }
+              }
+            }
           }
+        } catch (e) {
+          $.logErr(e, resp)
+        } finally {
+          resolve(data);
         }
-      } catch (e) {
-        $.logErr(e, resp)
-      } finally {
-        resolve(data);
-      }
-    })
+      })
   })
 }
 
@@ -157,6 +165,40 @@ async function sign() {
                 console.log(`签到获得${data.data.signAmount}现金，共计获得${data.data.cashDrawAmount}`)
               } else {
                 console.log(`签到失败，${data.msg}`)
+              }
+            }
+          }
+        } catch (e) {
+          $.logErr(e, resp)
+        } finally {
+          resolve(data);
+        }
+      })
+  })
+}
+
+async function cashout() {
+  return new Promise(resolve => {
+    $.get(taskUrl('speedSignCashOut', {
+      "kernelPlatform": "RN",
+      "activityId": "8a8fabf3cccb417f8e691b6774938bc2",
+      "noWaitPrize": "false"
+    }),
+      async (err, resp, data) => {
+        try {
+          if (err) {
+            console.log(`${JSON.stringify(err)}`)
+            console.log(`${$.name} API请求失败，请检查网路重试`)
+          } else {
+            if (safeGet(data)) {
+              data = JSON.parse(data);
+              if (data.subCode === 0 && data.data.cashOutSuccess === true) {
+                console.log(`红包兑换成功，剩余${data.data.cashDrawAmount}元`)
+                if ($.isNode()) {
+                  await notify.sendNotify(`${$.name}`, `【京东账号${$.index}】 ${$.nickName}\n兑换红包成功，请尽快使用\n更多脚本->"https://github.com/zero205/JD_tencent_scf"`);
+                }
+              } else {
+                console.log(`红包兑换失败，${data.msg}`)
               }
             }
           }
