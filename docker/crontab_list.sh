@@ -56,7 +56,7 @@
 # 京东种豆得豆
 1 7-22/1 * * * node /scripts/jd_plantBean.js >> /scripts/logs/jd_plantBean.log 2>&1
 # 京东全民开红包
-1 0,1,23 * * * node /scripts/jd_redPacket.js >> /scripts/logs/jd_redPacket.log 2>&1
+19 0,1,23 * * * node /scripts/jd_redPacket.js >> /scripts/logs/jd_redPacket.log 2>&1
 # 进店领豆
 6 0 * * * node /scripts/jd_shop.js >> /scripts/logs/jd_shop.log 2>&1
 # 京东东东超市
