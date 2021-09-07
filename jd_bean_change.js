@@ -214,7 +214,7 @@ async function showMsg() {
 
     }
   }
-  ReturnMessage += `🧧🧧🧧🧧红包明细🧧🧧🧧🧧`;
+  ReturnMessage += `🧧🧧🧧红包明细🧧🧧🧧`;
   ReturnMessage += `${$.message}\n\n`;
   allMessage += ReturnMessage;
   console.log(`${ReturnMessage}`);
