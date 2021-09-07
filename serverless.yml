@@ -32,25 +32,25 @@ inputs:
           name: blueCoinFixed
           cronExpression: "53 59 23 * * * *"
           enable: true
-          argument: jd_blueCoinFixed
+          argument: jd_blueCoinFixed&jd_blueCoin
     - timer: #京东汽车兑换
         parameters:
           name: jd_car_exchange
           cronExpression: "58 59 23 * * * *"
           enable: true
           argument: jd_car_exchange
-    - timer:  #京喜工厂 #财富岛热气球
+    - timer:  #京喜工厂
         parameters:
           name: dreamFactory
-          cronExpression: "2 45 0,6-23/1 * * * *"
+          cronExpression: "2 15 0,6-23/1 * * * *"
           enable: true
           argument: jd_dreamFactory
     - timer:  #财富岛助力
         parameters:
-          name: gua_wealth_island_help_cfd_loop
-          cronExpression: "3 0 0,1,9,14,18 * * * *"
+          name: gua_wealth_island_help
+          cronExpression: "3 0 0,1,18 * * * *"
           enable: true
-          argument: gua_wealth_island_help&jd_cfd_loop
+          argument: gua_wealth_island_help
     - timer:  #京喜牧场
         parameters:
           name: jxmc
