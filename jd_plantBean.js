@@ -110,11 +110,9 @@ async function jdPlantBean() {
           }, (err, resp, data) => {
             if (err) {
               console.log('代理池上报失败', err)
-              reject(err)
             } else {
               if (data === '1' || data === '0') {
                 console.log('代理池上报成功')
-                resolve()
               }
             }
           })
