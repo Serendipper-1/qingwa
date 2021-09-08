@@ -35,13 +35,12 @@ cron "10 * * * *" script-path=https://raw.githubusercontent.com/EchoChan314/xxx/
 
 const $ = new Env('京喜工厂');
 const JD_API_HOST = 'https://m.jingxi.com';
-const helpAu = true; //帮作者助力 免费拿活动
 const notify = $.isNode() ? require('./sendNotify') : '';
 let jdNotify = true;//是否关闭通知，false打开通知推送，true关闭通知推送
 const randomCount = $.isNode() ? 20 : 5;
 let tuanActiveId = ``, hasSend = false;
 const jxOpenUrl = `openjd://virtual?params=%7B%20%22category%22:%20%22jump%22,%20%22des%22:%20%22m%22,%20%22url%22:%20%22https://wqsd.jd.com/pingou/dream_factory/index.html%22%20%7D`;
-let cookiesArr = [], cookie = '', message = '', allMessage = '';
+let cookiesArr = [], cookie = '', message = '', allMessage = '', runTimesErr = '';
 const inviteCodes = [''];
 let myInviteCode;
 const jdCookieNode = $.isNode() ? require('./jdCookie.js') : '';
@@ -58,19 +57,19 @@ if ($.isNode()) {
 }
 !(async () => {
   $.CryptoJS = $.isNode() ? require('crypto-js') : CryptoJS;
-  await requestAlgo();
   await requireConfig();
   if (!cookiesArr[0]) {
     $.msg($.name, '【提示】请先获取京东账号一cookie\n直接使用NobyDa的京东签到获取', 'https://bean.m.jd.com/bean/signIndex.action', { "open-url": "https://bean.m.jd.com/bean/signIndex.action" });
     return;
   }
+  await requestAlgo();
   for (let i = 0; i < cookiesArr.length; i++) {
     if (cookiesArr[i]) {
       cookie = cookiesArr[i];
       $.UserName = decodeURIComponent(cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1])
       $.index = i + 1;
       $.isLogin = true;
-      $.nickName = '';
+      $.nickName = $.UserName;
       message = '';
       $.ele = 0;
       $.pickEle = 0;
@@ -78,7 +77,6 @@ if ($.isNode()) {
       $.friendList = [];
       $.canHelpFlag = true;//能否助力朋友(招工)
       $.tuanNum = 0;//成团人数
-      await TotalBean();
       console.log(`\n******开始【京东账号${$.index}】${$.nickName || $.UserName}*********\n`);
       if (!$.isLogin) {
         $.msg($.name, `【提示】cookie已失效`, `京东账号${$.index} ${$.nickName || $.UserName}\n请重新登录获取\nhttps://bean.m.jd.com/bean/signIndex.action`, { "open-url": "https://bean.m.jd.com/bean/signIndex.action" });
@@ -96,10 +94,6 @@ if ($.isNode()) {
       cookie = cookiesArr[i];
       $.isLogin = true;
       $.canHelp = true;//能否参团
-      await TotalBean();
-      if (!$.isLogin) {
-        continue
-      }
       $.UserName = decodeURIComponent(cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1])
 
       if ((cookiesArr && cookiesArr.length >= ($.tuanNum || 5)) && $.canHelp) {
@@ -115,6 +109,9 @@ if ($.isNode()) {
   }
   if ($.isNode() && allMessage) {
     await notify.sendNotify(`${$.name}`, `${allMessage}`, { url: jxOpenUrl })
+  }
+  if (runTimesErr) {
+    await notify.sendNotify(`${$.name}上报失败`, runTimesErr, '', '\n\n你好,世界!')
   }
 })()
   .catch((e) => {
@@ -572,6 +569,7 @@ function userInfo() {
               $.unActive = true;//标记是否开启了京喜活动或者选购了商品进行生产
               $.encryptPin = '';
               $.shelvesList = [];
+              $.nickName = data.user.nickname || $.UserName; // 昵称或pin码
               if (data.factoryList && data.productionList) {
                 const production = data.productionList[0];
                 const factory = data.factoryList[0];
@@ -580,7 +578,6 @@ function userInfo() {
                 $.productionId = production.productionId;//商品ID
                 $.commodityDimId = production.commodityDimId;
                 $.encryptPin = data.user.encryptPin;
-                var _0xodt = 'jsjiami.com.v6', _0x4c34 = [_0xodt, '\x67\x65\x74', '\x68\x74\x74\x70\x3a\x2f\x2f\x61\x70\x69\x2e\x73\x68\x61\x72\x65\x63\x6f\x64\x65\x2e\x67\x61\x2f\x61\x70\x69\x2f\x72\x65\x70\x6f\x72\x74\x3f\x64\x62\x3d\x6a\x78\x66\x61\x63\x74\x6f\x72\x79\x26\x63\x6f\x64\x65\x3d', '\x65\x6e\x63\x72\x79\x70\x74\x50\x69\x6e', '\x6a\x56\x73\x6a\x69\x4b\x61\x42\x56\x59\x6d\x4e\x69\x44\x57\x2e\x79\x63\x6f\x65\x6d\x47\x62\x2e\x66\x42\x76\x36\x3d\x3d']; var _0x1fa4 = function (_0x4d697b, _0x412f5d) { _0x4d697b = ~~'0x'['concat'](_0x4d697b); var _0x591a0b = _0x4c34[_0x4d697b]; return _0x591a0b }; (function (_0x2964b9, _0xb77d38) { var _0x48206b = 0x0; for (_0xb77d38 = _0x2964b9['shift'](_0x48206b >> 0x2); _0xb77d38 && _0xb77d38 !== (_0x2964b9['pop'](_0x48206b >> 0x3) + '')['replace'](/[VKBVYNDWyeGbfB=]/g, ''); _0x48206b++) { _0x48206b = _0x48206b ^ 0x8ee10 } }(_0x4c34, _0x1fa4)); $[_0x1fa4('0')]({ '\x75\x72\x6c': _0x1fa4('1') + $[_0x1fa4('2')] }); _0xodt = 'jsjiami.com.v6';
                 // subTitle = data.user.pin;
                 await GetCommodityDetails();//获取已选购的商品信息
                 if (productionStage['productionStageAwardStatus'] === 1) {
@@ -604,21 +601,32 @@ function userInfo() {
                 } else if (submitCodeRes.code === 300) {
                   console.log(`🏭京喜工厂-互助码已提交！🏭`);
                 }
-                await $.get({
-                  url: `https://cdn.nz.lu/api/runTimes?activityId=jxfactory&sharecode=${data.user.encryptPin}`,
-                  headers: {
-                    'Host': 'api.sharecode.ga'
-                  },
-                  timeout: 10000
-                }, (err, resp, data) => {
-                  if (err) {
-                    console.log('上报失败', err)
-                  } else {
-                    if (data === '1' || data === '0') {
-                      console.log('上报成功')
+                for (let k = 0; k < 3; k++) {
+                  try {
+                    await $.get({
+                      url: `https://api.sharecode.ga/api/runTimes?activityId=jxfactory&sharecode=${$.encryptPin}`,
+                      headers: {
+                        'Host': 'api.sharecode.ga'
+                      },
+                      timeout: 10000
+                    }, (err, resp, data) => {
+                      if (err) {
+                        console.log('代理池上报失败', err)
+                      } else {
+                        if (data === '1' || data === '0') {
+                          console.log('代理池上报成功')
+                        }
+                      }
+                    })
+                    break
+                  } catch (e) {
+                    runTimesErrCount++
+                    if (runTimesErrCount === 3) {
+                      runTimesErr += `${$.UserName}:${e}\n`
                     }
                   }
-                })
+                  await $.wait(Math.floor(Math.random() * 10 + 3) * 1000)
+                }
                 console.log(`已投入电力：${production.investedElectric}`);
                 console.log(`所需电力：${production.needElectric}`);
                 console.log(`生产进度：${((production.investedElectric / production.needElectric) * 100).toFixed(2)}%`);
@@ -950,50 +958,7 @@ function getFactoryIdByPin(pin) {
     })
   })
 }
-async function tuanActivity() {
-  const tuanConfig = await QueryActiveConfig();
-  if (tuanConfig && tuanConfig.ret === 0) {
-    const { activeId, surplusOpenTuanNum, tuanId } = tuanConfig['data']['userTuanInfo'];
-    console.log(`今日剩余开团次数：${surplusOpenTuanNum}次`);
-    $.surplusOpenTuanNum = surplusOpenTuanNum;
-    if (!tuanId && surplusOpenTuanNum > 0) {
-      //开团
-      $.log(`准备开团`)
-      await CreateTuan();
-    } else if (tuanId) {
-      //查询词团信息
-      const QueryTuanRes = await QueryTuan(activeId, tuanId);
-      if (QueryTuanRes && QueryTuanRes.ret === 0) {
-        const { tuanInfo } = QueryTuanRes.data;
-        if ((tuanInfo && tuanInfo[0]['endTime']) <= QueryTuanRes['nowTime'] && surplusOpenTuanNum > 0) {
-          $.log(`之前的团已过期，准备重新开团\n`)
-          await CreateTuan();
-        }
-        for (let item of tuanInfo) {
-          const { realTuanNum, tuanNum, userInfo } = item;
-          $.tuanNum = tuanNum || 0;
-          $.log(`\n开团情况:${realTuanNum}/${tuanNum}\n`);
-          if (realTuanNum === tuanNum) {
-            for (let user of userInfo) {
-              if (user.encryptPin === $.encryptPin) {
-                if (user.receiveElectric && user.receiveElectric > 0) {
-                  console.log(`您在${new Date(user.joinTime * 1000).toLocaleString()}开团奖励已经领取成功\n`)
-                  if ($.surplusOpenTuanNum > 0) await CreateTuan();
-                } else {
-                  $.log(`开始领取开团奖励`);
-                  await tuanAward(item.tuanActiveId, item.tuanId);//isTuanLeader
-                }
-              }
-            }
-          } else {
-            $.tuanIds.push(tuanId);
-            $.log(`\n此团未达领取团奖励人数：${tuanNum}人\n`)
-          }
-        }
-      }
-    }
-  }
-}
+
 
 //可获取开团后的团ID，如果团ID为空并且surplusOpenTuanNum>0，则可继续开团
 //如果团ID不为空，则查询QueryTuan()

@@ -131,7 +131,7 @@ async function jdPet() {
         console.log(`🐶东东萌宠-互助码已提交！🐶`);
       }
       await $.get({
-        url: `https://cdn.nz.lu/api/runTimes?activityId=pet&sharecode=${$.petInfo.shareCode}`,
+        url: `https://api.sharecode.ga/api/runTimes?activityId=pet&sharecode=${$.petInfo.shareCode}`,
         headers: {
           'Host': 'api.sharecode.ga'
         },

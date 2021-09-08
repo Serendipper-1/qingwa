@@ -145,7 +145,7 @@ function getTaskDetail(taskId = '') {
                 }
                 if (data?.data?.result?.taskVos[0].assistTaskDetailVo.taskToken) {
                   await $.get({
-                    url: `https://cdn.nz.lu/api/runTimes?activityId=health&sharecode=${data?.data?.result?.taskVos[0].assistTaskDetailVo.taskToken}`,
+                    url: `https://api.sharecode.ga/api/runTimes?activityId=health&sharecode=${data?.data?.result?.taskVos[0].assistTaskDetailVo.taskToken}`,
                     headers: {
                       'Host': 'api.sharecode.ga'
                     },

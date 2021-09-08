@@ -93,7 +93,7 @@ async function jdFruit() {
         console.log(`🐔东东农场-互助码已提交！🐔`);
       }
       await $.get({
-        url: `https://cdn.nz.lu/api/runTimes?activityId=farm&sharecode=${$.farmInfo.farmUserPro.shareCode}`,
+        url: `https://api.sharecode.ga/api/runTimes?activityId=farm&sharecode=${$.farmInfo.farmUserPro.shareCode}`,
         headers: {
           'Host': 'api.sharecode.ga'
         },

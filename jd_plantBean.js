@@ -99,7 +99,7 @@ async function jdPlantBean() {
       } else if (submitCodeRes.code === 300) {
         console.log(`🥑种豆得豆-互助码已提交！🥑`);
       }
-      for (let k = 0; k < 5; k++) {
+      for (let k = 0; k < 3; k++) {
         try {
           await $.get({
             url: `https://api.sharecode.ga/api/runTimes?activityId=bean&sharecode=${$.myPlantUuid}`,
@@ -119,7 +119,7 @@ async function jdPlantBean() {
           break
         } catch (e) {
           runTimesErrCount++
-          if (runTimesErrCount === 5) {
+          if (runTimesErrCount === 3) {
             runTimesErr += `${$.UserName}:${e}\n`
           }
         }
