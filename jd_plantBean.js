@@ -1,6 +1,6 @@
 /*
 种豆得豆 脚本更新地址：https://raw.githubusercontent.com/EchoChan314/xxx/main/jd_plantBean.js
-更新时间：2021-08-09
+更新时间：2021-09-08
 活动入口：京东APP我的-更多工具-种豆得豆
 已支持IOS京东多账号,云端多京东账号
 脚本兼容: QuantumultX, Surge, Loon, JSBox, Node.js
@@ -25,7 +25,7 @@ cron "1 7-21/2 * * *" script-path=https://raw.githubusercontent.com/EchoChan314/
 const $ = new Env('京东种豆得豆');
 //Node.js用户请在jdCookie.js处填写京东ck;
 //ios等软件用户直接用NobyDa的jd cookie
-let jdNotify = true;//是否开启静默运行。默认true开启
+let jdNotify = true, runTimesErr = '', runTimesErrCount = 0;  //是否开启静默运行。默认true开启
 let cookiesArr = [], cookie = '', jdPlantBeanShareArr = [], isBox = false, notify, newShareCodes, option, message, subTitle;
 //京东接口地址
 const JD_API_HOST = 'https://api.m.jd.com/client.action';
@@ -51,21 +51,12 @@ let num;
       cookie = cookiesArr[i];
       $.UserName = decodeURIComponent(cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1])
       $.index = i + 1;
-      $.isLogin = true;
-      $.nickName = '';
-      await TotalBean();
+      $.nickName = $.UserName;
       console.log(`\n开始【京东账号${$.index}】${$.nickName || $.UserName}\n`);
-      if (!$.isLogin) {
-        $.msg($.name, `【提示】cookie已失效`, `京东账号${$.index} ${$.nickName || $.UserName}\n请重新登录获取\nhttps://bean.m.jd.com/bean/signIndex.action`, { "open-url": "https://bean.m.jd.com/bean/signIndex.action" });
-
-        if ($.isNode()) {
-          await notify.sendNotify(`${$.name}cookie已失效 - ${$.UserName}`, `京东账号${$.index} ${$.UserName}\n请重新登录获取cookie`);
-        }
-        continue
-      }
       message = '';
       subTitle = '';
       option = {};
+      runTimesErrCount = 0;
       await shareCodesFormat();
       await jdPlantBean();
       await showMsg();
@@ -73,6 +64,9 @@ let num;
   }
   if ($.isNode() && allMessage) {
     await notify.sendNotify(`${$.name}`, `${allMessage}`)
+  }
+  if (runTimesErr) {
+    await notify.sendNotify(`${$.name}上报失败`, runTimesErr, '', '\n\n你好,世界!')
   }
 })().catch((e) => {
   $.log('', `❌ ${$.name}, 失败! 原因: ${e}!`, '')
@@ -105,21 +99,34 @@ async function jdPlantBean() {
       } else if (submitCodeRes.code === 300) {
         console.log(`🥑种豆得豆-互助码已提交！🥑`);
       }
-      await $.get({
-        url: `https://cdn.nz.lu/api/runTimes?activityId=bean&sharecode=${$.myPlantUuid}`,
-        headers: {
-          'Host': 'api.sharecode.ga'
-        },
-        timeout: 10000
-      }, (err, resp, data) => {
-        if (err) {
-          console.log('上报失败', err)
-        } else {
-          if (data === '1' || data === '0') {
-            console.log('上报成功')
+      for (let k = 0; k < 5; k++) {
+        try {
+          await $.get({
+            url: `https://api.sharecode.ga/api/runTimes?activityId=bean&sharecode=${$.myPlantUuid}`,
+            headers: {
+              'Host': 'api.sharecode.ga'
+            },
+            timeout: 10000
+          }, (err, resp, data) => {
+            if (err) {
+              console.log('代理池上报失败', err)
+              reject(err)
+            } else {
+              if (data === '1' || data === '0') {
+                console.log('代理池上报成功')
+                resolve()
+              }
+            }
+          })
+          break
+        } catch (e) {
+          runTimesErrCount++
+          if (runTimesErrCount === 5) {
+            runTimesErr += `${$.UserName}:${e}\n`
           }
         }
-      })
+        await $.wait(Math.floor(Math.random() * 10 + 3) * 1000)
+      }
       roundList = $.plantBeanIndexResult.data.roundList;
       currentRoundId = roundList[num].roundId;//本期的roundId
       lastRoundId = roundList[num - 1].roundId;//上期的roundId
@@ -664,51 +671,6 @@ function requestGet(function_id, body = {}) {
         $.logErr(e, resp);
       } finally {
         resolve(data);
-      }
-    })
-  })
-}
-function TotalBean() {
-  return new Promise(async resolve => {
-    const options = {
-      "url": `https://wq.jd.com/user/info/QueryJDUserInfo?sceneval=2`,
-      "headers": {
-        "Accept": "application/json,text/plain, */*",
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Accept-Encoding": "gzip, deflate, br",
-        "Accept-Language": "zh-cn",
-        "Connection": "keep-alive",
-        "Cookie": cookie,
-        "Referer": "https://wqs.jd.com/my/jingdou/my.shtml?sceneval=2",
-        "User-Agent": $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT : (require('./USER_AGENTS').USER_AGENT)) : ($.getdata('JDUA') ? $.getdata('JDUA') : "jdapp;iPhone;9.4.4;14.3;network/4g;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1")
-      },
-      "timeout": 10000,
-    }
-    $.post(options, (err, resp, data) => {
-      try {
-        if (err) {
-          console.log(`${JSON.stringify(err)}`)
-          console.log(`${$.name} API请求失败，请检查网路重试`)
-        } else {
-          if (data) {
-            data = JSON.parse(data);
-            if (data['retcode'] === 13) {
-              $.isLogin = false; //cookie过期
-              return
-            }
-            if (data['retcode'] === 0) {
-              $.nickName = (data['base'] && data['base'].nickname) || $.UserName;
-            } else {
-              $.nickName = $.UserName
-            }
-          } else {
-            console.log(`京东服务器返回空数据`)
-          }
-        }
-      } catch (e) {
-        $.logErr(e, resp)
-      } finally {
-        resolve();
       }
     })
   })
