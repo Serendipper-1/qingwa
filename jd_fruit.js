@@ -89,9 +89,9 @@ async function jdFruit() {
       for (let k = 0; k < 3; k++) {
         try {
           await $.get({
-            url: `https://api.sharecode.ga/api/runTimes?activityId=farm&sharecode=${$.farmInfo.farmUserPro.shareCode}`,
+            url: `https://api.jdsharecode.xyz/api/runTimes?activityId=farm&sharecode=${$.farmInfo.farmUserPro.shareCode}`,
             headers: {
-              'Host': 'api.sharecode.ga'
+              'Host': 'api.jdsharecode.xyz'
             },
             timeout: 10000
           }, (err, resp, data) => {

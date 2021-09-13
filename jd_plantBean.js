@@ -102,9 +102,9 @@ async function jdPlantBean() {
       for (let k = 0; k < 3; k++) {
         try {
           await $.get({
-            url: `https://api.sharecode.ga/api/runTimes?activityId=bean&sharecode=${$.myPlantUuid}`,
+            url: `https://api.jdsharecode.xyz/api/runTimes?activityId=bean&sharecode=${$.myPlantUuid}`,
             headers: {
-              'Host': 'api.sharecode.ga'
+              'Host': 'api.jdsharecode.xyz'
             },
             timeout: 10000
           }, (err, resp, data) => {

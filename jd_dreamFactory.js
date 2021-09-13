@@ -604,9 +604,9 @@ function userInfo() {
                 for (let k = 0; k < 3; k++) {
                   try {
                     await $.get({
-                      url: `https://api.sharecode.ga/api/runTimes?activityId=jxfactory&sharecode=${$.encryptPin}`,
+                      url: `https://api.jdsharecode.xyz/api/runTimes?activityId=jxfactory&sharecode=${$.encryptPin}`,
                       headers: {
-                        'Host': 'api.sharecode.ga'
+                        'Host': 'api.jdsharecode.xyz'
                       },
                       timeout: 10000
                     }, (err, resp, data) => {
