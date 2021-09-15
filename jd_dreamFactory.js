@@ -1372,19 +1372,9 @@ function requireConfig() {
     }
     console.log(`开始获取${$.name}配置文件\n`);
     //Node.js用户请在jdCookie.js处填写京东ck;
-    const shareCodes = $.isNode() ? require('./jdDreamFactoryShareCodes.js') : '';
     console.log(`共${cookiesArr.length}个京东账号\n`);
-    $.shareCodesArr = [];
-    if ($.isNode()) {
-      Object.keys(shareCodes).forEach((item) => {
-        if (shareCodes[item]) {
-          $.shareCodesArr.push(shareCodes[item])
-        }
-      })
-    } else {
-      if ($.getdata('jd_jxFactory')) $.shareCodesArr = $.getdata('jd_jxFactory').split('\n').filter(item => item !== "" && item !== null && item !== undefined);
-      console.log(`\nBoxJs设置的${$.name}好友邀请码:${$.getdata('jd_jxFactory')}\n`);
-    }
+    $.shareCodesArr = ['8Y-gNdxAw6f_cIYR14DRWl_mzVRzaJX8JLl2aI_DW2A=@pi4nuiVYMCSnZYIkVDhdQQ==@bZe703MgpOJJoncZtK5BVw==@2TDNms75VO8mS3pcwaMEKQ==@Yxs2zlaRhEzcOhKRBk7NPQ==',//账号一的好友shareCode,不同好友中间用@符号隔开
+      '8Y-gNdxAw6f_cIYR14DRWl_mzVRzaJX8JLl2aI_DW2A=@pi4nuiVYMCSnZYIkVDhdQQ==@bZe703MgpOJJoncZtK5BVw==@2TDNms75VO8mS3pcwaMEKQ==@Yxs2zlaRhEzcOhKRBk7NPQ=='];
     // console.log(`\n种豆得豆助力码::${JSON.stringify($.shareCodesArr)}`);
     console.log(`您提供了${$.shareCodesArr.length}个账号的${$.name}助力码\n`);
     resolve()
