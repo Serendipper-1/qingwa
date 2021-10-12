@@ -1,28 +1,28 @@
 /*
 京喜领88元红包
-活动入口：京喜app-》我的-》京喜领88元红包
-助力逻辑：先自己京东账号相互助力，如有剩余助力机会，则助力作者
+活动入口：京喜app -> 我的 -> 京喜领88元红包
+助力逻辑：优先内部互助，若有剩余次数助力池互助
 温馨提示：如提示助力火爆，可尝试寻找京东客服
 脚本兼容: Quantumult X, Surge, Loon, JSBox, Node.js
 ==============Quantumult X==============
 [task_local]
 #京喜领88元红包
-4 2,10 * * * https://raw.githubusercontent.com/Aaron-lv/sync/jd_scripts/jd_jxlhb.js, tag=京喜领88元红包, img-url=https://raw.githubusercontent.com/Orz-3/mini/master/Color/jd.png, enabled=true
+14 0,2 * * * https://raw.githubusercontent.com/EchoChan314/xxx/main/jd_jxlhb.js, tag=京喜领88元红包, img-url=https://raw.githubusercontent.com/Orz-3/mini/master/Color/jd.png, enabled=true
 
 ==============Loon==============
 [Script]
-cron "4 2,10 * * *" script-path=https://raw.githubusercontent.com/Aaron-lv/sync/jd_scripts/jd_jxlhb.js,tag=京喜领88元红包
+cron "14 0,2 * * *" script-path=https://raw.githubusercontent.com/EchoChan314/xxx/main/jd_jxlhb.js,tag=京喜领88元红包
 
 ================Surge===============
-京喜领88元红包 = type=cron,cronexp="4 2,10 * * *",wake-system=1,timeout=3600,script-path=https://raw.githubusercontent.com/Aaron-lv/sync/jd_scripts/jd_jxlhb.js
+京喜领88元红包 = type=cron,cronexp="14 0,2 * * *",wake-system=1,timeout=3600,script-path=https://raw.githubusercontent.com/EchoChan314/xxx/main/jd_jxlhb.js
 
 ===============小火箭==========
-京喜领88元红包 = type=cron,script-path=https://raw.githubusercontent.com/Aaron-lv/sync/jd_scripts/jd_jxlhb.js, cronexpr="4 2,10 * * *", timeout=3600, enable=true
+京喜领88元红包 = type=cron,script-path=https://raw.githubusercontent.com/EchoChan314/xxx/main/jd_jxlhb.js, cronexpr="14 0,2 * * *", timeout=3600, enable=true
  */
 const $ = new Env('京喜领88元红包');
 const notify = $.isNode() ? require('./sendNotify') : {};
 const jdCookieNode = $.isNode() ? require('./jdCookie.js') : {};
-let cookiesArr = [], cookie = '';
+let cookiesArr = [], cookie = '', codePool = [];
 let UA, UAInfo = {}, codeInfo = {}
 if ($.isNode()) {
   Object.keys(jdCookieNode).forEach((item) => {
@@ -41,8 +41,8 @@ const BASE_URL = 'https://m.jingxi.com/cubeactive/steprewardv3'
     return;
   }
   console.log('京喜领88元红包\n' +
-    '活动入口：京喜app-》我的-》京喜领88元红包\n' +
-    '助力逻辑：先自己京东账号相互助力，如有剩余助力机会，则助力作者\n' +
+    '活动入口：京喜app -> 我的 -> 京喜领88元红包\n' +
+    '助力逻辑：优先内部互助，若有剩余次数助力池互助\n' +
     '温馨提示：如提示助力火爆，可尝试寻找京东客服')
   let res = []
   res = await getAuthorShareCode('https://cdn.jsdelivr.net/gh/EchoChan314/xxx@main/jxhb.json')
@@ -75,8 +75,8 @@ const BASE_URL = 'https://m.jingxi.com/cubeactive/steprewardv3'
     await main();
   }
   //互助
-  console.log(`\n\n自己京东账号助力码：\n${JSON.stringify($.packetIdArr)}\n\n`);
-  console.log(`\n开始助力：助力逻辑 先自己京东相互助力，如有剩余助力机会，则助力作者\n`)
+  //console.log(`\n\n自己京东账号助力码：\n${JSON.stringify($.packetIdArr)}\n\n`);
+  console.log(`\n开始助力：自己京东相互助力\n`)
   for (let i = 0; i < cookiesArr.length; i++) {
     cookie = cookiesArr[i];
     $.UserName = decodeURIComponent(cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]);
@@ -137,6 +137,7 @@ async function main() {
   await joinActive();
   await $.wait(2000)
   await getUserInfo()
+  await submitCode($.lhbCode);
 }
 //参与活动
 function joinActive() {
@@ -190,8 +191,9 @@ function getUserInfo() {
             if (data.Data.dwHelpedTimes === $.helpNum) {
               console.log(`${$.grades[$.grades.length - 1]}个阶梯红包已全部拆完\n`)
             } else {
-              console.log(`获取助力码成功：${data.Data.strUserPin}\n`);
               if (data.Data.strUserPin) {
+                console.log(`获取助力码成功：${data.Data.strUserPin}\n`);
+                $.lhbCode = data.Data.strUserPin;
                 $.packetIdArr.push({
                   strUserPin: data.Data.strUserPin,
                   userName: $.UserName
@@ -312,7 +314,38 @@ function getAuthorShareCode(url) {
     })
   })
 }
-
+//提交互助码
+function submitCode(shareCode) {
+  if (!shareCode || shareCode == undefined || shareCode.length <= 0) { return; }
+  return new Promise(async resolve => {
+    $.get({ url: `http://www.helpu.cf/jdcodes/submit.php?code=${shareCode}&type=jxlhb&user=${$.UserName}`, timeout: 10000 }, (err, resp, data) => {
+      try {
+        if (err) {
+          console.log(`${JSON.stringify(err)}`)
+          console.log(`${$.name} 提交助力码 API请求失败，请检查网路重试`)
+        } else {
+          if (data) {
+            //console.log(`随机取个${randomCount}码放到您固定的互助码后面(不影响已有固定互助)`)
+            data = JSON.parse(data);
+            if (data.code === 300) {
+              $.needSubmit = false;
+              console.log("京喜领88红包，互助码已提交");
+            } else if (data.code === 200) {
+              $.needSubmit = false;
+              console.log("京喜领88红包，互助码提交成功");
+            }
+          }
+        }
+      } catch (e) {
+        $.logErr(e, resp)
+      } finally {
+        resolve(data || { "code": 500 });
+      }
+    })
+    await $.wait(10000);
+    resolve({ "code": 500 })
+  })
+}
 function taskurl(function_path, body = '', stk) {
   let url = `${BASE_URL}/${function_path}?activeId=${$.activeId}&publishFlag=1&channel=7&${body}&sceneval=2&g_login_type=1&timestamp=${Date.now()}&_=${Date.now() + 2}&_ste=1`
   const deviceId = UA.split(';') && UA.split(';')[4] || ''
