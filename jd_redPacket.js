@@ -271,7 +271,7 @@ function makeShareCodes(redPacketId) {
     pin = $.md5(pin)
     try {
       $.get({
-        url: `${$.isNode() ? require('./USER_AGENTS').hwApi : 'https://api.jdsharecode.xyz/api/'}autoInsert/redPacket?sharecode=${redPacketId}&pin=${pin}`,
+        url: `https://api.jdsharecode.xyz/api/autoInsert/redPacket?sharecode=${redPacketId}&pin=${pin}`,
         timeout: 10000
       }, (err, resp, data) => {
         data = $.toObj(data)
@@ -289,7 +289,7 @@ function getShareCodes() {
   return new Promise(resolve => {
     try {
       $.get({
-        url: `${$.isNode() ? require('./USER_AGENTS').hwApi : 'https://api.jdsharecode.xyz/api/'}redPacket/30`,
+        url: `https://api.jdsharecode.xyz/api/redPacket/30`,
         timeout: 10000
       }, (err, resp, data) => {
         data = $.toObj(data)
