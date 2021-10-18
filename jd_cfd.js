@@ -1667,7 +1667,7 @@ function uploadShareCode(code, pin) {
         } else {
           if (data) {
             if (data === 'OK') {
-              console.log(`已自动提交助力码\n`)
+              console.log(`已自动提交助力码by ddo\n`)
             } else if (data === 'error') {
               console.log(`助力码格式错误，乱玩API是要被打屁屁的~\n`)
             } else if (data === 'full') {
