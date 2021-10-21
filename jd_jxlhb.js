@@ -23,7 +23,7 @@ const $ = new Env('京喜领88元红包');
 const notify = $.isNode() ? require('./sendNotify') : {};
 const jdCookieNode = $.isNode() ? require('./jdCookie.js') : {};
 let cookiesArr = [], cookie = '', codePool = [];
-let UA, UAInfo = {}, codeInfo = {}
+let UA, UAInfo = {}, codeInfo = {}, token;
 if ($.isNode()) {
   Object.keys(jdCookieNode).forEach((item) => {
     cookiesArr.push(jdCookieNode[item])
@@ -44,8 +44,7 @@ const BASE_URL = 'https://m.jingxi.com/cubeactive/steprewardv3'
     '活动入口：京喜app -> 我的 -> 京喜领88元红包\n' +
     '助力逻辑：优先内部互助，若有剩余次数助力池互助\n' +
     '温馨提示：如提示助力火爆，可尝试寻找京东客服')
-  let res = []
-  res = await getAuthorShareCode('https://cdn.jsdelivr.net/gh/EchoChan314/xxx@main/jxhb.json')
+  let res = await getAuthorShareCode('https://raw.githubusercontent.com/Aaron-lv/updateTeam/master/shareCodes/jxhb.json')
   if (!res) {
     $.http.get({ url: 'https://purge.jsdelivr.net/gh/Aaron-lv/updateTeam@master/shareCodes/jxhb.json' }).then((resp) => { }).catch((e) => $.log('刷新CDN异常', e));
     await $.wait(1000)
@@ -72,6 +71,7 @@ const BASE_URL = 'https://m.jingxi.com/cubeactive/steprewardv3'
       }
       continue
     }
+    token = await getJxToken()
     await main();
   }
   //互助
@@ -82,6 +82,7 @@ const BASE_URL = 'https://m.jingxi.com/cubeactive/steprewardv3'
     $.UserName = decodeURIComponent(cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]);
     $.canHelp = true;
     UA = UAInfo[$.UserName]
+    token = await getJxToken()
     for (let j = 0; j < $.packetIdArr.length && $.canHelp; j++) {
       console.log(`【${$.UserName}】去助力【${$.packetIdArr[j].userName}】邀请码：${$.packetIdArr[j].strUserPin}`);
       if ($.UserName === $.packetIdArr[j].userName) {
@@ -118,6 +119,7 @@ const BASE_URL = 'https://m.jingxi.com/cubeactive/steprewardv3'
     $.canOpenGrade = true;
     $.UserName = decodeURIComponent(cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1])
     UA = UAInfo[$.UserName]
+    token = await getJxToken()
     for (let grade of $.grades) {
       if (!codeInfo[$.UserName]) continue;
       console.log(`\n【${$.UserName}】去拆第${grade}个红包`);
@@ -347,14 +349,9 @@ function submitCode(shareCode) {
   })
 }
 function taskurl(function_path, body = '', stk) {
-  let url = `${BASE_URL}/${function_path}?activeId=${$.activeId}&publishFlag=1&channel=7&${body}&sceneval=2&g_login_type=1&timestamp=${Date.now()}&_=${Date.now() + 2}&_ste=1`
-  const deviceId = UA.split(';') && UA.split(';')[4] || ''
-  url += `&phoneid=${deviceId}`
-  url += `&stepreward_jstoken=${Math.random().toString(36).slice(2, 10) +
-    Math.random().toString(36).slice(2, 10) +
-    Math.random().toString(36).slice(2, 10) +
-    Math.random().toString(36).slice(2, 10)
-    }`
+  let url = `${BASE_URL}/${function_path}?activeId=${$.activeId}&publishFlag=1&channel=7&${body}&sceneval=2&g_login_type=1&timestamp=${token['timestamp']}&_=${Date.now() + 2}&_ste=1`
+  url += `&phoneid=${token['phoneid']}`
+  url += `&stepreward_jstoken=${token['farm_jstoken']}`
   if (stk) {
     url += '&_stk=' + encodeURIComponent(stk)
   }
@@ -373,7 +370,7 @@ function taskurl(function_path, body = '', stk) {
 }
 function randomString(e) {
   e = e || 32;
-  let t = "0123456789abcdef", a = t.length, n = "";
+  let t = "abcdef0123456789", a = t.length, n = "";
   for (let i = 0; i < e; i++)
     n += t.charAt(Math.floor(Math.random() * a));
   return n
